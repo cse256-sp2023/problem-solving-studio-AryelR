@@ -1,5 +1,47 @@
 // ---- Define your dialogs  and panels here ----
+let effective_permissions_panel = define_new_effective_permissions("permissions_panel", true);
+$('#sidepanel').append(effective_permissions_panel);
+$('#permissions_panel').attr('filepath', '/C');
 
+let user_select_field = define_new_user_select_field("user_select", "Select User", 
+    function(selected_user) { 
+        $('#permissions_panel').attr('username', selected_user);
+});
+$('#sidepanel').append(user_select_field);
+
+let dialog = define_new_dialog("dialog", "Permission Information");
+$('.perm_info').click(function(){
+    dialog.dialog("open");
+    dialog.empty();
+
+    let file_path = $('#permissions_panel').attr('filepath');
+    let username = $('#permissions_panel').attr('username'); 
+    let permission_name = this.getAttribute('permission_name');
+
+    let allowed = allow_user_action(path_to_file[file_path], all_users[username], permission_name, true);
+
+    let permission_append_title = document.createElement('b')
+    permission_append_title.append("Permission Name: ")
+    let permission_append_name = document.createElement('p')
+    permission_append_name.append(permission_name)
+
+    let allowed_append_title = document.createElement('b')
+    allowed_append_title.append("Access Allowed: ")
+    let allowed_append_name = document.createElement('p')
+    allowed_append_name.append(allowed.is_allowed)
+
+    dialog.append(permission_append_title, permission_append_name);
+    dialog.append(allowed_append_title, allowed_append_name);
+    //if text explanation is null it errors
+    if(allowed.text_explanation){
+        let allowed_text = get_explanation_text(allowed)
+        let explanation_append_title = document.createElement('b')
+        explanation_append_title.append("Explanation: ")
+        let explanation_append_name = document.createElement('p')
+        explanation_append_name.append(allowed_text)
+        dialog.append(explanation_append_title, explanation_append_name)
+    }
+})
 
 
 // ---- Display file structure ----
